@@ -36,7 +36,25 @@ export async function execute(interaction) {
 			port: servers[nom].port,
 			password: servers[nom].mdp
 		});
-		await rcon.send(command).then(response => interaction.reply("`" + command + "`\n>>> " + response))
+		await rcon.send(command)
+			.then(response => {
+				let toSend = "`" + command + "`\n>>> " + response
+				if(toSend.length > 2000){
+					const arrows = '>>> '
+					let base = toSend.slice(0, 2000)
+					let lastIndex = base.lastIndexOf('\n');
+					interaction.reply(base.slice(0, lastIndex))
+					let newLastIndex;
+					toSend = toSend.slice(lastIndex)
+					do {
+						base = toSend.slice(0, 2000 - arrows.length);
+						newLastIndex = base.lastIndexOf('\n')
+						toSend = base.slice(0, newLastIndex)
+						interaction.channel.send(arrows + toSend)
+					} while(toSend.length > 2000)
+				}
+				else interaction.reply(toSend)
+			})
 	});
 }
 
