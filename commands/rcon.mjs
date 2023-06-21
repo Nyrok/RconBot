@@ -36,8 +36,10 @@ export async function execute(interaction) {
 			port: servers[nom].port,
 			password: servers[nom].mdp
 		});
+		rcon.on('error', (error) => console.log(error))
 		await rcon.send(command)
 			.then(response => {
+				if(!response.length) response = 'Aucun output.'
 				let toSend = "`" + command + "`\n>>> " + response
 				if(toSend.length > 2000){
 					const arrows = '>>> '
@@ -45,7 +47,7 @@ export async function execute(interaction) {
 					let lastIndex = base.lastIndexOf('\n');
 					interaction.reply(base.slice(0, lastIndex))
 					let newLastIndex;
-					toSend = toSend.slice(lastIndex)
+					toSend = toSend.slice(lastIndex + 1)
 					do {
 						base = toSend.slice(0, 2000 - arrows.length);
 						newLastIndex = base.lastIndexOf('\n')
