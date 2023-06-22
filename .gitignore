@@ -2,3 +2,4 @@ node_modules
 ./servers.json
 package-lock.json
 .DS_Store
+*.json
