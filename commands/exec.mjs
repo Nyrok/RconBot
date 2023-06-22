@@ -6,16 +6,16 @@ import { readFile } from 'fs/promises'
 
 export function getData() {
 	return new SlashCommandBuilder()
-		.setName('eval')
-		.setDescription('Envoyer du coder à évaluer sur le serveur')
+		.setName('exec')
+		.setDescription('Envoyer une commande à exécuter sur le serveur')
 		.addStringOption(new SlashCommandStringOption()
 			.setName('serveur')
 			.setDescription('Choisit le serveur sur lequel faire le rcon')
 			.setRequired(true)
 			.setAutocomplete(true))
 		.addStringOption(new SlashCommandStringOption()
-			.setName('code')
-			.setDescription('Code à exécuter')
+			.setName('command')
+			.setDescription('Commande à exécuter')
 			.setRequired(true))
 }
 
@@ -24,7 +24,7 @@ export function getData() {
  */
 export async function execute(interaction) {
 	let nom = interaction.options.getString("serveur")
-	let code = interaction.options.getString("code")
+	let command = interaction.options.getString("command")
 	await readFile('./servers.json', 'utf8').then(async (data) => {
 		let servers = JSON.parse(data);
 		if (typeof servers[nom] === "undefined") {
@@ -36,22 +36,22 @@ export async function execute(interaction) {
 			port: servers[nom].port,
 			password: servers[nom].mdp
 		}).catch(e => interaction.reply("> **Connexion impossible**\n" + e));
-		await rcon?.sendRaw(Buffer.from(code, 'utf-8'), 4)
-			.then(response => {
+		await rcon?.sendRaw(Buffer.from(command, 'utf-8'), 5)
+			.then(async response => {
 				if(!response.length) response = 'Aucun output.'
-				let toSend = "`" + code + "`\n>>> " + response
+				let toSend = "`" + command + "`\n```sh\n" + response + "\n```"
 				if(toSend.length > 2000){
-					const arrows = '>>> '
+					const arrows = '\n```'
 					let base = toSend.slice(0, 2000)
 					let lastIndex = base.lastIndexOf('\n');
-					interaction.reply(base.slice(0, lastIndex))
+					await interaction.reply(base.slice(0, lastIndex) + "\n```")
 					let newLastIndex;
 					toSend = toSend.slice(lastIndex + 1)
 					do {
-						base = toSend.slice(0, 2000 - arrows.length);
+						base = toSend.slice(0, 2000 - arrows.length * 2 + 2);
 						newLastIndex = base.lastIndexOf('\n')
 						toSend = base.slice(0, newLastIndex)
-						interaction.channel.send(arrows + toSend)
+						await interaction.channel.send(arrows + 'sh\n' + toSend + arrows)
 					} while(toSend.length > 2000)
 				}
 				else interaction.reply(toSend)

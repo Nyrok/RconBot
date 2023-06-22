@@ -35,9 +35,8 @@ export async function execute(interaction) {
 			host: servers[nom].ip,
 			port: servers[nom].port,
 			password: servers[nom].mdp
-		});
-		rcon.on('error', (error) => console.log(error))
-		await rcon.send(command)
+		}).catch(e => interaction.reply("> **Connexion impossible**\n" + e));
+		await rcon?.send(command)
 			.then(response => {
 				if(!response.length) response = 'Aucun output.'
 				let toSend = "`" + command + "`\n>>> " + response
@@ -56,7 +55,7 @@ export async function execute(interaction) {
 					} while(toSend.length > 2000)
 				}
 				else interaction.reply(toSend)
-			})
+			}).catch(e => console.log(e));
 	});
 }
 
