@@ -12,6 +12,7 @@ import * as delserver from "./commands/delserver.mjs"
 import * as evalc from "./commands/evalc.mjs"
 import * as exec from "./commands/exec.mjs"
 import * as download from "./commands/download.mjs"
+import * as listen from "./commands/listen.mjs"
 import config from "./config.json" assert {type: 'json'};
 import fs from 'fs';
 const {token, clientId} = config;
@@ -19,7 +20,7 @@ const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages]
 })
 client.commands = new Collection()
-const modules = [rcon, addserver, delserver, evalc, exec, download];
+const modules = [rcon, addserver, delserver, evalc, exec, download, listen];
 let commands = []
 modules.forEach(command => commands.push(command.getData().toJSON()));
 
@@ -51,6 +52,8 @@ client.on(Events.InteractionCreate, async interaction => {
             await exec.execute(interaction);
         } else if (interaction.commandName === "download") {
             await download.execute(interaction);
+        } else if (interaction.commandName === "listen") {
+            await listen.execute(interaction);
         }
     } else if (interaction.isAutocomplete()) {
         if (interaction.commandName === "rcon") {
@@ -63,6 +66,8 @@ client.on(Events.InteractionCreate, async interaction => {
             await exec.autocomplete(interaction);
         } else if (interaction.commandName === "download") {
             await download.autocomplete(interaction);
+        } else if (interaction.commandName === "listen") {
+            await listen.autocomplete(interaction);
         }
     }
 });
