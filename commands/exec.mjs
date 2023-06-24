@@ -36,6 +36,7 @@ export async function execute(interaction) {
 			port: servers[nom].port,
 			password: servers[nom].mdp
 		}).catch(e => interaction.reply("> **Connexion impossible**\n" + e));
+		if (!rcon.authenticated) return;
 		await rcon?.sendRaw(Buffer.from(command, 'utf-8'), 5)
 			.then(async response => {
 				if(!response.length) response = 'Aucun output.'
@@ -55,7 +56,7 @@ export async function execute(interaction) {
 					} while(toSend.length > 2000)
 				}
 				else interaction.reply(toSend)
-			}).catch(e => console.log(e));
+			}).catch(e => interaction.reply("> **Envoi impossible**\n" + e));
 	});
 }
 
