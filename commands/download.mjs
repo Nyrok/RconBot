@@ -30,18 +30,16 @@ export async function execute(interaction) {
             interaction.reply("> **Ce serveur n'existe pas !** ❌")
             return;
         }
-        const rcon = await Rcon
-            .connect({host: servers[nom].ip, port: servers[nom].port, password: servers[nom].mdp, timeout: 60000})
-            .catch(e => interaction.reply("> **Connexion impossible**\n" + e));
+        const rcon = await Rcon.connect({host: servers[nom].ip, port: servers[nom].port, password: servers[nom].mdp, timeout: 60000}).catch(e => interaction.reply("> **Connexion impossible**\n" + e));
         if (!rcon.authenticated) return;
         let fileSize;
         let fileData = {};
-        const sum = (obj) => Object.values(obj)
-            .reduce((accumulator, value) => accumulator + value.length, 0);
+        const sum = (obj) => Object.values(obj).reduce((accumulator, value) => accumulator + value.length, 0);
         const round = (value) => Number(value.toFixed(2))
         await interaction.deferReply()
         rcon.emitter.on('packet', (packet) => {
-            const file = 'cache/' + path.replace('.', '_') + '.zip';
+            const zipName = path.replace('.', '_') + '.zip';
+            const file = 'cache/' + zipName;
             if (packet?.type === 7) {
                 fileSize = Number(packet.payload.toString())
                 interaction.editReply(`DOWNLOAD \`${path}\` into \`${file}\` (${fileSize} bytes)`)
@@ -56,9 +54,10 @@ export async function execute(interaction) {
                 for(const buffer of Object.values(fileData)){
                     data += atob(buffer.toString())
                 }
-                writeFile(file, encode(data, 'ISO-8859-1'))
+                const fileBuffer = encode(data, 'ISO-8859-1');
+                writeFile(file, fileBuffer)
                 if(fileSize < 8000000){
-                    interaction.editReply({content: `DOWNLOAD \`${path}\` into \`${file}\` (${fileSize} bytes)\n> 100% - **Downloaded successfully ✅**`, files: [file]})
+                    interaction.editReply({content: `DOWNLOAD \`${path}\` into \`${file}\` (${fileSize} bytes)\n> 100% - **Downloaded successfully ✅**`, files: [{name: zipName, attachment: fileBuffer}]})
                 } else {
                     interaction.editReply(`DOWNLOAD \`${path}\` into \`${file}\` (${fileSize} bytes)\n> 100% - **Downloaded successfully ✅**\n> *Can't send file through Discord (>8 MB)*`)
                 }
