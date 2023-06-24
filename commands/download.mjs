@@ -50,6 +50,7 @@ export async function execute(interaction) {
                 if(id % 10 === 0) interaction.editReply(`DOWNLOAD \`${path}\` into \`${file}\` (${fileSize} bytes)\n> ${round((sum(fileData) / fileSize) * 100)}% - Received **${sum(fileData)} bytes**`)
             } else {
                 if (!packet.payload.length) return interaction.editReply("> **Le fichier `" + path + "` n'existe pas.**");
+                if(packet.payload.toString() === 'error') return interaction.editReply(`DOWNLOAD \`${path}\` into \`${file}\` (${fileSize} bytes)\n> **Erreur lors du téléchargement.**`);
                 let data = "";
                 for(const buffer of Object.values(fileData)){
                     data += atob(buffer.toString())
