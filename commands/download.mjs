@@ -9,7 +9,7 @@ const {encode} = iconv;
 export function getData() {
     return new SlashCommandBuilder()
         .setName('download')
-        .setDescription('Envoyer une commande à exécuter sur le serveur')
+        .setDescription('Télécharger un path vers le cache')
         .addStringOption(new SlashCommandStringOption().setName('serveur').setDescription('Choisit le serveur sur lequel faire le rcon').setRequired(true).setAutocomplete(true))
         .addStringOption(new SlashCommandStringOption().setName('path').setDescription('Path du fichier distant à télécharger').setRequired(true))
 }
