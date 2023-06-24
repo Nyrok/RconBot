@@ -67,5 +67,9 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 });
 
+fs.mkdir('./cache', (err) => {
+    if (err) return;
+    console.log('Directory cache created successfully!');
+});
 loadCommands();
 client.login(token)
