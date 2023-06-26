@@ -2,7 +2,7 @@
 
 import {CommandInteraction, AutocompleteInteraction, SlashCommandBuilder, SlashCommandStringOption} from 'discord.js'
 import {Rcon} from "rcon-client"
-import {readFile, writeFile} from 'fs/promises'
+import {mkdir, readFile, writeFile} from 'fs/promises'
 import iconv from 'iconv-lite';
 const {encode} = iconv;
 
@@ -37,9 +37,11 @@ export async function execute(interaction) {
         const sum = (obj) => Object.values(obj).reduce((accumulator, value) => accumulator + value.length, 0);
         const round = (value) => Number(value.toFixed(2))
         await interaction.deferReply()
+        mkdir(`cache/${servers[nom].ip}:${servers[nom].port}`).catch(e => e)
         rcon.emitter.on('packet', (packet) => {
-            const zipName = path.replace('.', '_') + '.zip';
-            const file = 'cache/' + zipName;
+            const fileName = path.replace(/^.*[\\\/]/, '')
+            const zipName = fileName.replace('.', '_') + '.zip';
+            const file = `cache/${servers[nom].ip}:${servers[nom].port}/` + zipName;
             if (packet?.type === 7) {
                 fileSize = Number(packet.payload.toString())
                 interaction.editReply(`DOWNLOAD \`${path}\` into \`${file}\` (${fileSize} bytes)`)
