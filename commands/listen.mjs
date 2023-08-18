@@ -33,7 +33,7 @@ export async function execute(interaction) {
 		await rcon?.sendRaw(Buffer.from(webhook, 'utf-8'), 9)
 			.then(response => {
 				if(!response.length) response = 'Aucun output.'
-				interaction.reply(`> \`${response}\` is now listening to \`${webhook}\``)
+				interaction.reply(`> **${nom}** (\`${servers[nom].ip}:${servers[nom].port}\`) is now listening in \`${webhook}\``)
 			}).catch(e => interaction.reply("> **Envoi impossible**\n" + e));
     });
 }
