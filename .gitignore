@@ -1,6 +1,7 @@
 node_modules
-./servers.json
+servers.json
 package-lock.json
 .DS_Store
+cache
 *.json
 *.zip
